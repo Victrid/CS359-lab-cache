@@ -10,11 +10,10 @@
 
 # Changed to run under python 3.9.5
 
-import subprocess;
-import re;
-import os;
-import sys;
 import optparse;
+import re;
+import subprocess;
+
 
 #
 # computeMissScore - compute the score depending on the number of

@@ -3,31 +3,39 @@
 # Note: requires a 64-bit x86-64 system 
 #
 CC = gcc
-CFLAGS = -g -Wall -Werror -std=c99 -m64
+CFLAGS = -g -Wall -Werror -std=c99 -m64 -lm
+STUDENTID = 519021911045
+NAME = 蒋圩淏
 
-all: csim test-trans tracegen
+all: |  csim test-trans tracegen
+
+handout: report.pdf
 	# Generate a handin tar file each time you compile
-	-tar -cvf ${USER}-handin.tar  csim.c trans.c 
+	zip ./${STUDENTID}-${NAME}.zip  csim.c trans.c report.pdf
 
-csim: csim.c cachelab.c cachelab.h
-	$(CC) $(CFLAGS) -o csim csim.c cachelab.c -lm 
+csim: cachelab.o csim.o
+	$(CC) $(CFLAGS) $^ -O0 -o $@
 
-test-trans: test-trans.c trans.o cachelab.c cachelab.h
-	$(CC) $(CFLAGS) -o test-trans test-trans.c cachelab.c trans.o 
+test-trans: test-trans.o trans.o cachelab.o
+	$(CC) $(CFLAGS) $^ -O0 -o $@
 
-tracegen: tracegen.c trans.o cachelab.c
-	$(CC) $(CFLAGS) -O0 -o tracegen tracegen.c trans.o cachelab.c
+tracegen: tracegen.o trans.o cachelab.o
+	$(CC) $(CFLAGS) $^ -O0 -o $@
 
-trans.o: trans.c
-	$(CC) $(CFLAGS) -O0 -c trans.c
+%.o: %.c
+	$(CC) $(CFLAGS) -O0 -c $^
 
+report.pdf:
+	+make -C report report.pdf
+	cp ./report/report.pdf ./report.pdf
 #
-# Clean the src dirctory
+# Clean the src directory
 #
 clean:
+	+make -C report clean
 	rm -rf *.o
-	rm -f *.tar
-	rm -f csim
+	rm -f *.tar *.tmp
+	rm -f csim report.pdf
 	rm -f test-trans tracegen
 	rm -f trace.all trace.f*
 	rm -f .csim_results .marker
